@@ -9,14 +9,14 @@
 #define LOADCELL_SCK_PIN  2
 
 HX711 scale;
+RTC_PCF8563 rtc;
 
 int CS = 10;
 File myFile;
-String fileName = "TESTING"; //need a way to automatically generate a file name -- use RTC once I get battery -- OR USE FOR LOOP AND LOOP THROUGH "TESTING_#"
-String flName = "";
+String fileName = ""; //need a way to automatically generate a file name -- use RTC once I get battery -- OR USE FOR LOOP AND LOOP THROUGH "TESTING_#"
 int buttonPin = 8; //wire according to arduino website (pretty sure button press opens 5v)
 String buttonState = "";
-int time = 0;
+int runTime = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -27,27 +27,32 @@ void setup() {
     Serial.println("Serial not initialized");
   }
   pinMode(LED_BUILTIN, OUTPUT);
+
   if(SD.begin(CS)) {
     Serial.println("SD initialized");
   } else {
     Serial.println("SD not initialized");
   }
-  bool fileCreated = false
-  for (int i = 0; i < 100 and fileCreated == false; i++) { // this entire for loop is the iterative file naming system
-    char *intStr = itoa(i);
-    string str = string(intStr);
-    flName = fileName + intStr;
-    
-    if (SD.exists(flName)) {
-      return
-    } else {
-      myFile = SD.open(flName, FILE_WRITE);
-      if (SD.exists(flName)) {
-        Serial.print("Succesfully opened file: ");
-        Serial.println(flName); 
-        fileCreated = true
-      }
-    }
+  
+  if (rtc.begin()) {
+    Serial.print("RTC initialized");
+  } else {
+    Serial.print("RTC connection failed");
+  }
+  
+  DateTime now = rtc.now(); //making all the rtc variables for concatenation
+  String year = now.year();
+  String month = now.month();
+  String day = now.month();
+  String hour = now.hour();
+  String minute - now.minute();
+  String dash = "-";
+  String actualTime = month + dash + day + dash + year + dash + hour + dash + minute; 
+  fileName = actualTime;
+
+
+  myFile = SD.open(fileName, FILE_WRITE);
+
   }
   scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
   scale.set_scale(calibration_factor); //This value is obtained by using the SparkFun_HX711_Calibration sketch
@@ -76,12 +81,12 @@ void setup() {
 }
 
 void loop() {
-  time = millis();
-  Serial.println("void loop entered");
+  runTime = millis();
+  Serial.println("loop entered");
   currTime = millis
-  while (time < 30000) //while the button is not pressed
+  while (runTime < 30000) //while the button is not pressed
   {
-    time = millis();
+    runTime = millis();
     myFile.print(scale.get_units(), 3); //print the scale output to the SD file
     myFile.print("   ");
     myFile.println(millis());
