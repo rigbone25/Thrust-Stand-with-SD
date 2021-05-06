@@ -34,7 +34,24 @@ void setup() {
     Serial.println("SD not initialized");
   }
   
-  myFile = SD.open(, FILE_WRITE);
+  if (rtc.begin()) {
+    Serial.print("RTC initialized");
+  } else {
+    Serial.print("RTC connection failed");
+  }
+  
+  DateTime now = rtc.now(); //making all the rtc variables for concatenation
+  String year = now.year();
+  String month = now.month();
+  String day = now.month();
+  String hour = now.hour();
+  String minute - now.minute();
+  String dash = "-";
+  String actualTime = month + dash + day + dash + year + dash + hour + dash + minute; 
+  fileName = actualTime;
+
+
+  myFile = SD.open(fileName, FILE_WRITE);
 
   }
   scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
@@ -65,7 +82,7 @@ void setup() {
 
 void loop() {
   runTime = millis();
-  Serial.println("void loop entered");
+  Serial.println("loop entered");
   currTime = millis
   while (runTime < 30000) //while the button is not pressed
   {
