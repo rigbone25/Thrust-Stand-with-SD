@@ -9,14 +9,14 @@
 #define LOADCELL_SCK_PIN  2
 
 HX711 scale;
-RTC_PCF8563 rtc;
 
 int CS = 10;
 File myFile;
-String fileName = ""; //need a way to automatically generate a file name -- use RTC once I get battery -- OR USE FOR LOOP AND LOOP THROUGH "TESTING_#"
+String fileName = "TESTING"; //need a way to automatically generate a file name -- use RTC once I get battery -- OR USE FOR LOOP AND LOOP THROUGH "TESTING_#"
+String flName = "TESTING";
 int buttonPin = 8; //wire according to arduino website (pretty sure button press opens 5v)
 String buttonState = "";
-int runTime = 0;
+int time = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -27,38 +27,37 @@ void setup() {
     Serial.println("Serial not initialized");
   }
   pinMode(LED_BUILTIN, OUTPUT);
-
   if(SD.begin(CS)) {
     Serial.println("SD initialized");
   } else {
     Serial.println("SD not initialized");
   }
-  
-  if (rtc.begin()) {
-    Serial.print("RTC initialized");
-  } else {
-    Serial.print("RTC connection failed");
-  }
-  
-  DateTime now = rtc.now(); //making all the rtc variables for concatenation
-  String year = now.year();
-  String month = now.month();
-  String day = now.month();
-  String hour = now.hour();
-  String minute - now.minute();
-  String dash = "-";
-  String actualTime = month + dash + day + dash + year + dash + hour + dash + minute; 
-  fileName = actualTime;
+  /*bool fileCreated = false;
+  for (int i = 0; i < 100 and fileCreated == false; i++) { // this entire for loop is the iterative file naming system
+    char *intStr = itoa(i);
+    string str = string(intStr);
+    flName = fileName + intStr;
 
-
-  myFile = SD.open(fileName, FILE_WRITE);
-
-  }
+    if (SD.exists(flName)) {
+      break;
+    } else {
+      myFile = SD.open(flName, FILE_WRITE);
+      if (SD.exists(flName)) {
+        Serial.print("Succesfully opened file: ");
+        Serial.println(flName); 
+        fileCreated = true;
+      }
+    }*/
+  myFile = SD.open(flName, FILE_WRITE);
+  if (SD.exists(flName)) {
+      Serial.print("Succesfully opened file: ");
+      Serial.println(flName); 
+        
   scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
   scale.set_scale(calibration_factor); //This value is obtained by using the SparkFun_HX711_Calibration sketch
   scale.tare(); //Assuming there is no weight on the scale at start up, reset the scale to 0
-  
-  
+
+
   /*for (int x = 0; x < 8; x++) { //blink the red led 4 times once the SD file is opened
     digitalWrite(LED_BUILTIN, HIGH);
     delay(500);
@@ -76,14 +75,15 @@ void setup() {
   }
   Serial.println("File successfully opened");
   Serial.println("8 second delay");
-  delay(8000); 
+  delay(8000);
+
 }
 
 void loop() {
-  startTime = millis();
+  int startTime = millis();
   Serial.println("loop entered");
-  currTime = millis() 
-  while (runTime < 30000) {
+  int currTime = 0;
+  while (currTime < 30000) {
     currTime = millis() - startTime;
     myFile.print(scale.get_units(), 3); //print the scale output to the SD file
     myFile.print("   ");
@@ -93,12 +93,12 @@ void loop() {
 
   myFile.close(); //close the file once the button is pressed
     Serial.println("File closed");
-    
-  /*for (int x = 0; x < 4; x++) { //blink the green LED 4 times
+
+  for (int x = 0; x < 4; x++) { //blink the green LED 4 times
     digitalWrite(LED_BUILTIN, HIGH);
     delay(50);
     digitalWrite(LED_BUILTIN, LOW);
-    delay(50);*/
+    delay(50);
   }
   delay(100000);
-}
+} 
