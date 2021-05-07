@@ -76,17 +76,15 @@ void setup() {
   }
   Serial.println("File successfully opened");
   Serial.println("8 second delay");
-  delay(8000);
- 
+  delay(8000); 
 }
 
 void loop() {
-  runTime = millis();
+  startTime = millis();
   Serial.println("loop entered");
-  currTime = millis
-  while (runTime < 30000) //while the button is not pressed
-  {
-    runTime = millis();
+  currTime = millis() 
+  while (runTime < 30000) {
+    currTime = millis() - startTime;
     myFile.print(scale.get_units(), 3); //print the scale output to the SD file
     myFile.print("   ");
     myFile.println(millis());
@@ -96,11 +94,11 @@ void loop() {
   myFile.close(); //close the file once the button is pressed
     Serial.println("File closed");
     
-  for (int x = 0; x < 4; x++) { //blink the green LED 4 times
+  /*for (int x = 0; x < 4; x++) { //blink the green LED 4 times
     digitalWrite(LED_BUILTIN, HIGH);
     delay(50);
     digitalWrite(LED_BUILTIN, LOW);
-    delay(50);
+    delay(50);*/
   }
   delay(100000);
 }
